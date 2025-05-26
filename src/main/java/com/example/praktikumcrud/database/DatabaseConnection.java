@@ -1,5 +1,6 @@
 package com.example.praktikumcrud.database;
 
+import com.example.praktikumcrud.model.Account;
 import com.example.praktikumcrud.model.User;
 
 import java.sql.*;
@@ -123,5 +124,48 @@ public class DatabaseConnection {
       System.out.println("Error deleteUserById: " + e.getMessage());
     }
     return false;
+  }
+
+  public boolean registerUser(Account account) throws SQLException {
+    try {
+      Class.forName("com.mysql.cj.jdbc.Driver");
+      Connection conn = getConnection();
+      PreparedStatement ps = conn.prepareStatement("INSERT INTO account (email, password) VALUES (?, ?)");
+      ps.setString(1, account.getEmail());
+      ps.setString(2, account.getPassword());
+      ps.executeUpdate();
+
+      return true;
+    } catch (SQLException e) {
+      System.out.println(e.getMessage());
+      return false;
+    } catch (ClassNotFoundException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public Account loginUser(String email) throws SQLException {
+    try {
+      Class.forName("com.mysql.cj.jdbc.Driver");
+      Connection conn = getConnection();
+      PreparedStatement ps = conn.prepareStatement("select * from account where email = ?");
+      ps.setString(1, email);
+      ResultSet rs = ps.executeQuery();
+      Account accountUser = null;
+      if (rs.next()) {
+        int id = Integer.parseInt(rs.getString("id"));
+        String emailUser = rs.getString("email");
+        String password = rs.getString("password");
+        accountUser = new Account(id, emailUser, password);
+      }
+
+      return accountUser;
+
+    } catch (SQLException e) {
+      System.out.println(e.getMessage());
+    } catch (ClassNotFoundException e) {
+      throw new RuntimeException(e);
+    }
+    return null;
   }
 }

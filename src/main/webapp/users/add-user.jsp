@@ -5,7 +5,22 @@
   Time: 12:13
   To change this template use File | Settings | File Templates.
 --%>
+
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="com.example.praktikumcrud.model.Account" %>
+<%
+  try {
+    Account user = (session != null) ? (Account) session.getAttribute("user") : null;
+
+    if (user == null) {
+      response.sendRedirect("auth/login.jsp");
+      return;
+    }
+  } catch (Exception e) {
+    System.out.println(e.getMessage());
+  }
+%>
+
 <html>
   <head>
     <title>Add User</title>
